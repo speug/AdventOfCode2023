@@ -6,6 +6,7 @@ def read_lines(input: Union[Path, str]):
     if isinstance(input, Path):
         with open(input, 'r') as f:
             lines = f.readlines()
+        lines = [l.rstrip() for l in lines]
         return lines
     else:
         lines = input.split('\n')
