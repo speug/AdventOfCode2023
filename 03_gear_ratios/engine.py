@@ -1,10 +1,10 @@
 from pathlib import Path
 import sys
 import numpy as np
+
 curr_file = Path(__file__)
 sys.path.append(str(curr_file.parent.parent))
 from utils import read_lines, get_neighbours
-from collections import defaultdict
 
 
 # nice edgecase tester from
@@ -21,7 +21,7 @@ from collections import defaultdict
 # 2.2......12.
 # .*.........*
 # 1.1..503+.56"""
-input = curr_file.parent / 'input'
+input = curr_file.parent / "input"
 lines = read_lines(input)
 grid = []
 for line in lines:
@@ -38,7 +38,7 @@ for i in range(max_i):
         if grid[i, j].isdigit():
             digits.append(grid[i, j])
             coords.append((i, j))
-        if not grid[i, j].isdigit() or j == max_j-1:
+        if not grid[i, j].isdigit() or j == max_j - 1:
             if digits:
                 number = int("".join(digits))
                 part_numbers.append((number, coords))
@@ -55,15 +55,15 @@ for number, digit_coords in part_numbers:
         coord_set = coord_set | set(coords)
     coord_set = coord_set - set(digit_coords)
     for coord in coord_set:
-        if (grid[coord] != '.' and not grid[coord].isdigit()):
+        if grid[coord] != "." and not grid[coord].isdigit():
             part_sum += number
             break
-        
-print(f'Sum of part numbers is {part_sum}')
+
+print(f"Sum of part numbers is {part_sum}")
 
 # part 2
 # get gear candidates
-gear_is, gear_js = np.where(grid == '*')
+gear_is, gear_js = np.where(grid == "*")
 gear_ratios = 0
 start_idx = 0
 for i, j in zip(gear_is, gear_js):
@@ -83,4 +83,4 @@ for i, j in zip(gear_is, gear_js):
                 break
     if len(overlapping_numbers) == 2:
         gear_ratios += overlapping_numbers[0] * overlapping_numbers[1]
-print(f'Sum of gear ratios is {gear_ratios}')
+print(f"Sum of gear ratios is {gear_ratios}")
