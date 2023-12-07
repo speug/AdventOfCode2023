@@ -1,20 +1,15 @@
+from functools import cmp_to_key
 from pathlib import Path
 import sys
+import time
 import numpy as np
 
 curr_file = Path(__file__)
 sys.path.append(str(curr_file.parent.parent))
 from utils import read_lines
-from functools import cmp_to_key
 
 
-card_vals = {
-    'A': 14,
-    'K': 13,
-    'Q': 12,
-    'J': 11,
-    'T': 10
-}
+card_vals = {"A": 14, "K": 13, "Q": 12, "J": 11, "T": 10}
 
 
 def cards_to_int(hand):
@@ -65,7 +60,7 @@ def compare_hands(hand_bid1, hand_bid2, eval_fun=evaluate_hand):
         for c1, c2 in zip(hand1, hand2):
             if c1 != c2:
                 return c1 - c2
-        raise ValueError(f'{hand1} and {hand2} are of equal value!')
+        raise ValueError(f"{hand1} and {hand2} are of equal value!")
 
 
 input = """AAAAA 2
@@ -82,28 +77,30 @@ AAKQJ 31
 22345 37
 AKQJT 41
 23456 43"""
-input = curr_file.parent / 'input'
+input = curr_file.parent / "input"
 lines = read_lines(input)
 split = [x.split() for x in lines]
+t1 = time.process_time()
 sorted_hands = sorted(split, key=cmp_to_key(compare_hands))
+t2 = time.process_time()
 total_winnings = 0
 for i, (_, bid) in enumerate(sorted_hands):
     total_winnings += (i + 1) * int(bid)
-print(f'Total winnings are {total_winnings}')
+print(f"Total winnings are {total_winnings} (took {t2 - t1}s)")
 
 # part 2
 # now we want to map Js to jokers
-card_vals['J'] = 1
+card_vals["J"] = 1
+
 
 def evaluate_hand_with_jokers(hand_str, card_list):
-    hand_list = cards_to_int(hand_str)
-    if 'J' not in hand_str or hand_str == 'JJJJJ':
-        return evaluate_hand(hand_str, hand_list)
+    if "J" not in hand_str or hand_str == "JJJJJ":
+        return evaluate_hand(hand_str, card_list)
 
-    other_cards_in_hand = set([x for x in list(hand_str) if x != 'J']) 
+    other_cards_in_hand = set([x for x in list(hand_str) if x != "J"])
     max_value = 0
     for c in other_cards_in_hand:
-        new_str = hand_str.replace('J', c)
+        new_str = hand_str.replace("J", c)
         new_list = cards_to_int(new_str)
         score = evaluate_hand(new_str, new_list)
         if score > max_value:
@@ -111,10 +108,13 @@ def evaluate_hand_with_jokers(hand_str, card_list):
     return max_value
 
 
-sorted_hands = sorted(split,
-                      key=cmp_to_key(
-    lambda a, b: compare_hands(a, b, evaluate_hand_with_jokers)))
+t1 = time.process_time()
+sorted_hands = sorted(
+    split,
+    key=cmp_to_key(lambda a, b: compare_hands(a, b, evaluate_hand_with_jokers))
+)
+t2 = time.process_time()
 total_winnings = 0
 for i, (_, bid) in enumerate(sorted_hands):
     total_winnings += (i + 1) * int(bid)
-print(f'Total winnings with jokers are {total_winnings}')
+print(f"Total winnings with jokers are {total_winnings} (took {t2 - t1}s)")
