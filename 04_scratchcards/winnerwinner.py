@@ -47,7 +47,7 @@ for card_id, card_numbers, winning_numbers in cards:
     matches = calculate_matches(card_numbers, winning_numbers)
     if matches:
         if card_id + matches < n_cards:
-            total_cards[card_id : card_id + matches] += total_cards[card_id - 1]
+            total_cards[card_id: card_id + matches] += total_cards[card_id - 1]
         else:
             total_cards[card_id:] += total_cards[card_id - 1]
 print(f"Total cards: {int(np.sum(total_cards))}")
