@@ -13,12 +13,12 @@ def parse_maps(lines):
     instructions = list(lines[0].rstrip())
     tree = {}
     for l in lines[2:]:
-        node, children = l.split(' = ')
-        left, right = children.split(', ')
+        node, children = l.split(" = ")
+        left, right = children.split(", ")
         # trim parentheses
         left = left[1:]
         right = right[:-1]
-        tree[node] = {'L': left, 'R': right}
+        tree[node] = {"L": left, "R": right}
     return tree, instructions
 
 
@@ -28,11 +28,11 @@ AAA = (BBB, BBB)
 BBB = (AAA, ZZZ)
 ZZZ = (ZZZ, ZZZ)
 """
-input = curr_dir / 'input'
+input = curr_dir / "input"
 lines = read_lines(input)
 tree, instructions = parse_maps(lines)
-root = 'AAA'
-goal = 'ZZZ'
+root = "AAA"
+goal = "ZZZ"
 pointer = root
 steps = 0
 for instruction in cycle(instructions):
@@ -40,7 +40,7 @@ for instruction in cycle(instructions):
         break
     pointer = tree[pointer][instruction]
     steps += 1
-print(f'Took a total of {steps} steps.')
+print(f"Took a total of {steps} steps.")
 
 # part 2
 # try to brute-force
@@ -54,16 +54,17 @@ def find_cycle(start_node, tree, instructions):
     steps_until_loop = 0
     steps_until_first_goal = None
     for instruction in cycle(instructions):
-        if pointer[-1] == 'Z' and pointer in traversed:
+        if pointer[-1] == "Z" and pointer in traversed:
             break
-        if pointer[-1] == 'Z' and steps_until_first_goal is None:
+        if pointer[-1] == "Z" and steps_until_first_goal is None:
             steps_until_first_goal = steps_until_loop
         traversed.append(pointer)
         pointer = tree[pointer][instruction]
         steps_until_loop += 1
     idx_of_loop = traversed.index(pointer)
-    goal_indices = [i+1 for i, x in enumerate(traversed[idx_of_loop:])
-                    if x[-1] == 'Z']
+    goal_indices = [
+        i + 1 for i, x in enumerate(traversed[idx_of_loop:]) if x[-1] == "Z"
+    ]
     loop_length = len(traversed) - idx_of_loop
     return steps_until_first_goal, loop_length, goal_indices
 
@@ -86,7 +87,7 @@ def sync_with_offset(period1, offset1, period2, offset2):
     offset_diff = offset1 - offset2
     od_mult, od_remainder = divmod(offset_diff, gdc)
     if od_remainder:
-        raise ValueError('The ghosts will never sync!')
+        raise ValueError("The ghosts will never sync!")
     comb_period = period1 // gdc * period2
     comb_offset = (offset1 - s * od_mult * period1) % comb_period
     return comb_period, comb_offset
@@ -95,11 +96,11 @@ def sync_with_offset(period1, offset1, period2, offset2):
 # all both the methods above are useless
 # BECAUSE THERE IS A SECRET PROPERTY that the cycle period == offset
 # for all ghosts
-pointers = [x for x in tree.keys() if x[-1] == 'A']
+pointers = [x for x in tree.keys() if x[-1] == "A"]
 cycle_properties = []
 for s in pointers:
     _, loop_length, _ = find_cycle(s, tree, instructions)
     cycle_properties.append(loop_length)
 
 # loop over list of cycle properties, combine as you goal
-print(f'All ghosts sync up after {lcm(*cycle_properties)} steps.')
+print(f"All ghosts sync up after {lcm(*cycle_properties)} steps.")
