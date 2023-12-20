@@ -2,11 +2,13 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 import numpy as np
+import matplotlib.pyplot as plt
 
 curr_dir = Path(__file__).parent
 sys.path.append(str(curr_dir.parent))
 from utils import read_lines, get_neighbours
 
+sys.setrecursionlimit(5000)
 
 class Node:
     def __init__(self, pipe_type, coordinates, is_start=False):
@@ -89,13 +91,18 @@ class Node:
 
 
 print_grid = False
-input = """..F7.
-.FJ|.
-SJ.L7
-|F--J
-LJ...
+input = """.F----7F7F7F7F-7....
+.|F--7||||||||FJ....
+.||.FJ||||||||L7....
+FJL7L7LJLJ||LJ.L-7..
+L--J.L7...LJS7F-7L7.
+....F-J..F7FJ|L7L7L7
+....L7.F7||L7|.L7L7|
+.....|FJLJ|FJ|F7|.LJ
+....FJL-7.||.||||...
+....L---J.LJ.LJLJ...
 """
-input = curr_dir / "input"
+# input = curr_dir / "input"
 lines = read_lines(input)
 grid = np.array([list(x) for x in lines])
 if print_grid:
@@ -213,16 +220,26 @@ for i in range(n):
     for j in range(m):
         if node_grid[i, j] is not None and node_grid[i, j].start_connection:
             c_grid[i, j] = 1
+
+c_grid[start_idx] = 4
 # color
+plt.imshow(c_grid)
+plt.show()
 for i in range(n):
     for j in range(m):
         if c_grid[i, j] == 1:
-            c_grid = color_grid(c_grid, (i, j))
-            if check_edge_color(c_grid):
-                c_grid[c_grid == 3] = -1
+            n_grid = color_grid(c_grid, (i, j))
+            if check_edge_color(n_grid):
+                n_grid[n_grid == 3] = -1
             else:
-                c_grid[c_grid == 3] = 2
+                n_grid[n_grid == 3] = 2
+            if not np.all(n_grid == c_grid):
+                c_grid = n_grid
+                plt.imshow(c_grid)
+                plt.show()
 print(f'Number of internal points: {np.sum(c_grid == 2)}')
+plt.imshow(c_grid)
+plt.show()
 
 
 if print_grid:
