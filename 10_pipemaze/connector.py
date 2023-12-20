@@ -200,7 +200,8 @@ def color_grid(grid: np.ndarray, start_idx: tuple[int]):
     # color all uncolored cells with temp color (3)
     if grid[start_idx] == 0:
         grid[start_idx] = 3
-    _, neighbours = get_neighbours(grid, start_idx[0], start_idx[1])
+    _, neighbours = get_neighbours(grid, start_idx[0], start_idx[1],
+                                   diagonals=True)
     neighbours = [n for n in neighbours if grid[n] == 0]
     for n in neighbours:
         grid = color_grid(grid, n)
@@ -229,15 +230,13 @@ plt.show()
 for i in range(n):
     for j in range(m):
         if c_grid[i, j] == 1:
-            n_grid = color_grid(c_grid, (i, j))
-            if check_edge_color(n_grid):
-                n_grid[n_grid == 3] = -1
+            c_grid = color_grid(c_grid, (i, j))
+            if check_edge_color(c_grid):
+                c_grid[c_grid == 3] = -1
             else:
-                n_grid[n_grid == 3] = 2
-            if not np.all(n_grid == c_grid):
-                c_grid = n_grid
-                plt.imshow(c_grid)
-                plt.show()
+                c_grid[c_grid == 3] = 2
+# at this point, could check for each colored area
+# if it has a between-pipes connection to the outside
 print(f'Number of internal points: {np.sum(c_grid == 2)}')
 plt.imshow(c_grid)
 plt.show()
