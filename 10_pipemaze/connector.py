@@ -98,7 +98,8 @@ LJ...
 input = curr_dir / "input"
 lines = read_lines(input)
 grid = np.array([list(x) for x in lines])
-print(grid)
+if print_grid:
+    print(grid)
 node_grid = np.empty(grid.shape, dtype=object)
 n, m = grid.shape
 start_idx = None
@@ -178,6 +179,50 @@ for i in range(n):
         if node is not None and node.start_connection:
             distances.append(node.start_distance)
 print(f"Max distance from the start is {np.max(distances)}")
+
+# part 2
+# perform flood:
+# construct a table where connected points are 1, non-connected 0
+# then, can just loop over the table, flood fill from each 1
+# outside area -1, inside 2
+# then just sum 2s
+
+
+def color_grid(grid: np.ndarray, start_idx: tuple[int]):
+    # color all uncolored cells with temp color (3)
+    if grid[start_idx] == 0:
+        grid[start_idx] = 3
+    _, neighbours = get_neighbours(grid, start_idx[0], start_idx[1])
+    neighbours = [n for n in neighbours if grid[n] == 0]
+    for n in neighbours:
+        grid = color_grid(grid, n)
+    return grid
+
+
+def check_edge_color(grid: np.ndarray):
+    left_edge = 3 in grid[:, 0]
+    right_edge = 3 in grid[:, -1]
+    top_edge = 3 in grid[0, 1:-1]
+    bottom_edge = 3 in grid[-1, 1:-1]
+    return any([left_edge, right_edge, top_edge, bottom_edge])
+
+
+# construct simple table
+c_grid = np.zeros_like(node_grid, dtype=int)
+for i in range(n):
+    for j in range(m):
+        if node_grid[i, j] is not None and node_grid[i, j].start_connection:
+            c_grid[i, j] = 1
+# color
+for i in range(n):
+    for j in range(m):
+        if c_grid[i, j] == 1:
+            c_grid = color_grid(c_grid, (i, j))
+            if check_edge_color(c_grid):
+                c_grid[c_grid == 3] = -1
+            else:
+                c_grid[c_grid == 3] = 2
+print(f'Number of internal points: {np.sum(c_grid == 2)}')
 
 
 if print_grid:
