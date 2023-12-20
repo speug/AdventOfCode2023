@@ -79,7 +79,8 @@ class Node:
         elif self.start_distance is not None:
             return self.start_distance
         elif prev is None:
-            return np.min([x.distance_to_start(self) for x in self.connections]) + 1
+            return np.min(
+                [x.distance_to_start(self) for x in self.connections]) + 1
         else:
             return self.next(prev).distance_to_start(self) + 1
 
